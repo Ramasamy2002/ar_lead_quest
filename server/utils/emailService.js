@@ -6,9 +6,11 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: "",
+    pass: "",
+
   },
+
   logger: true,
   debug: true,
   socketTimeout: 20000, // Time before it stops trying to send
@@ -17,7 +19,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async ({ to, subject, text, html }) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: "gokul2q@gmail.com",
     to,
     subject,
     text,

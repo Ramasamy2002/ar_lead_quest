@@ -13,7 +13,7 @@ router.use(cors());
 router.get('/', auth, async (req, res) => {
   try {
     const data = await Data.find({ userId: req.user.userId });
-    console.log(data);
+   
     const decryptedData = data.map(item => {
       return {
         name: item.name,
@@ -21,7 +21,7 @@ router.get('/', auth, async (req, res) => {
         url: item.url,
       };
     });
-    console.log(decryptedData);
+   
     res.json(decryptedData);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching data' });
@@ -47,14 +47,17 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.post('/send-email', auth, async (req, res) => {
+
   try {
+
     const { subject, message } = req.body;
 
     const data = await Data.find({ userId: req.user.userId });
-    const rawEmails = data.map(item => item.email);
-
+    const decryptedData = data.map(item => decrypt(item.email));
+    console.log(decryptedData)
     // Validate emails
-    const emails = validateEmails(rawEmails);
+    const emails =decryptedData;
+    console.log(emails);
     if (emails.length === 0) {
       return res.status(400).json({ message: 'No valid email recipients found' });
     }
