@@ -63,15 +63,17 @@ function Email() {
     }
 
     try {
+      
       await axios.post(
         'http://localhost:3000/api/data/send-email',
         { 
           subject, 
           message,
-          emails: selectedEmails // Update backend to use this field
+          emails: selectedEmails 
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log(selectedEmails);
       setEmailStatus('Emails sent successfully!');
       setSubject('');
       setMessage('');

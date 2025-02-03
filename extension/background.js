@@ -25,6 +25,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     return true;
   } else if (message.action === "scrapeProfiles") {
+    const startTime = Date.now();
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const activeTab = tabs[0];
       if (activeTab?.url && !activeTab.url.startsWith("chrome://")) {
@@ -33,13 +34,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           files: ["content.js"],
         });
         sendResponse({ status: "Scraping profiles..." });
+        
       } else {
         console.error("Cannot scrape profiles: Invalid tab or page.");
         sendResponse({ status: "Error: Invalid tab or page." });
       }
+      const endTime = Date.now()-startTime;
+      console.log('Time taken to scrape profiles:',endTime);
     });
     return true;
   } else if (message.action === "scrapeContactInfo") {
+    const startTime = Date.now();
     chrome.storage.local.get(
       ["profiles", "jwtToken"],
       ({ profiles, jwtToken }) => {
@@ -110,6 +115,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             } else {
               chrome.storage.local.set({ emails }, () => {
                 console.log("Finished processing all profiles.");
+                const endTime = Date.now()-startTime;
+                console.log('Time taken to scrape contact info:',endTime);
                 chrome.runtime.sendMessage({ action: "scrapingComplete" });
               });
             }
@@ -122,6 +129,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     );
     sendResponse({ status: "Contact info scraping started." });
+    
     return true;
   }
 });
