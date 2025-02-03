@@ -19,6 +19,8 @@ router.get('/', auth, async (req, res) => {
         name: item.name,
         email: decrypt(item.email),
         url: item.url,
+        _id: item._id,
+        createdAt: item.createdAt
       };
     });
    
@@ -50,15 +52,17 @@ router.post('/send-email', auth, async (req, res) => {
 
   try {
 
-    const { subject, message } = req.body;
+    const { subject, message,emails} = req.body;
+    
 
     const data = await Data.find({ userId: req.user.userId });
-    const decryptedData = data.map(item => decrypt(item.email));
-    console.log(decryptedData)
+    // const decryptedData = data.map(item => decrypt(item.email));
+    console.log("mails",emails);
     // Validate emails
-    const emails =decryptedData;
-    console.log(emails);
+    
+    // console.log("decrepted mail",emails);
     if (emails.length === 0) {
+
       return res.status(400).json({ message: 'No valid email recipients found' });
     }
 
@@ -67,6 +71,7 @@ router.post('/send-email', auth, async (req, res) => {
     const sendBatchedEmails = async (recipients, subject, text) => {
       for (let i = 0; i < recipients.length; i += batchSize) {
         const batch = recipients.slice(i, i + batchSize);
+        console.log('Sending batch:', batch);
         const results = await sendEmails(batch, subject, text, `<p>${text}</p>`);
         const failed = results.filter(result => result.status === 'failed');
         if (failed.length > 0) {
