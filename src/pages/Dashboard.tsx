@@ -14,7 +14,6 @@ interface DataItem {
 function Dashboard() {
   const [data, setData] = useState<DataItem[]>([]);
   const { token } = useAuth();
-  console.log(token);
   useEffect(() => {
     const fetchData = async () => {
       try {
